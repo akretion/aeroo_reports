@@ -37,6 +37,7 @@ import os, sys, traceback
 from tempfile import NamedTemporaryFile
 import openerp.report as report
 from openerp.report.report_sxw import report_sxw, report_rml#, browse_record_list
+from openerp.report.interface import report_int
 from pyPdf import PdfFileWriter, PdfFileReader
 
 from openerp.osv.orm import browse_record_list #TODO v8?
@@ -292,9 +293,9 @@ class Aeroo_report(report_sxw):
                 return _("Error! Subreports not available!")
             report_xml_ids = ir_obj.search(cr, uid, [('report_name', '=', name)], context=context)
             if report_xml_ids:
-                service = report.interface.report_int._reports['report.%s' % name]
+                service = report_int._reports['report.%s' % name]
                 report_xml = ir_obj.browse(cr, uid, report_xml_ids[0], context=context)
-                data = {'model': obj._table_name, 'id': obj.id, 'report_type': 'aeroo', 'in_format': 'oo-odt'}
+                data = {'model': obj._name, 'id': obj.id, 'report_type': 'aeroo', 'in_format': 'oo-odt'}
                 ### Get new printing object ###
                 sub_aeroo_print = AerooPrint()
                 service.active_prints[sub_aeroo_print.id] = sub_aeroo_print
@@ -321,8 +322,8 @@ class Aeroo_report(report_sxw):
             report_xml_ids = ir_obj.search(cr, uid, [('report_name', '=', name)], context=context)
             if report_xml_ids:
                 report_xml = ir_obj.browse(cr, uid, report_xml_ids[0], context=context)
-                data = {'model': obj._table_name, 'id': obj.id, 'report_type': 'aeroo', 'in_format': 'genshi-raw'}
-                report, output = report.interface.report_int._reports['report.%s' % name].create_genshi_raw_report(cr, uid, \
+                data = {'model': obj._name, 'id': obj.id, 'report_type': 'aeroo', 'in_format': 'genshi-raw'}
+                report, output = report_int._reports['report.%s' % name].create_genshi_raw_report(cr, uid, \
                                             [obj.id], data, report_xml, context=context, output=output) # change for OpenERP 6.0 - Service class usage
                 return report
             return None
